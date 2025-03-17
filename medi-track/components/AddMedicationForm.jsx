@@ -16,7 +16,7 @@ import Colors from "../constant/Colors";
 import { TypeList, WhenToTake } from "../constant/Option";
 import { Picker } from "@react-native-picker/picker";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import { FormatDataForText, FormatDate, formatTime } from "../service/ConvertDateTime";
+import { FormatDataForText, FormatDate, formatTime, getDateRange } from "../service/ConvertDateTime";
 import { getLocalStorage } from "../service/Storage";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../config/FirebaseConfig";
@@ -45,13 +45,16 @@ export default function AddMedicationForm() {
       Alert.alert("Nhập đầy đủ các trường");
       return;
     }
+    const dates=getDateRange(formData?.startDate,formData?.endDate);
+    console.log(dates); 
     setLoading(true);
     try {
       const dataToSave = {
         ...formData,
         type: { name: formData.type.name, icon: formData.type.icon },  // Đảm bảo type có icon
         userEmail: user?.email,
-        docId: docId
+        docId: docId,
+        dates: dates
       };
   
       console.log("Saving to Firestore:", dataToSave);  // Kiểm tra dữ liệu

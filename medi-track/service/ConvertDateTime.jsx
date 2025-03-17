@@ -1,7 +1,7 @@
 import moment from "moment";
 
 export const FormatDate = (timestam) => {
-  return new Date(timestam);
+  return new Date(timestam).setHours(0, 0, 0, 0);
 };
 export const FormatDataForText = (date) => {
   return moment(date).format("ll");
@@ -13,4 +13,15 @@ export const formatTime = (timestam) => {
     minute: "2-digit",
   });
   return timeString;//9:00 AM
+};
+ 
+export const getDateRange = (startDate, endDate) => {
+  const start = moment(startDate,'MM/DD/YYYY');
+  const end = moment(endDate,'MM/DD/YYYY');
+  const dates = [];
+  while (start.isSameOrBefore(end)) {
+    dates.push(start.format('MM/DD/YYYY'));
+    start.add(1, 'day'); 
+  }
+  return dates;
 };
