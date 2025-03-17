@@ -16,8 +16,8 @@ export const formatTime = (timestam) => {
 };
  
 export const getDateRange = (startDate, endDate) => {
-  const start = moment(startDate,'MM/DD/YYYY');
-  const end = moment(endDate,'MM/DD/YYYY');
+  const start = moment(new Date(startDate),'MM/DD/YYYY');
+  const end = moment(new Date(endDate),'MM/DD/YYYY');
   const dates = [];
   while (start.isSameOrBefore(end)) {
     dates.push(start.format('MM/DD/YYYY'));
@@ -25,3 +25,15 @@ export const getDateRange = (startDate, endDate) => {
   }
   return dates;
 };
+
+export const getDateRangeToDisplay =() =>{
+  const dateList = [];
+  for (let i = 0; i < 7; i++) {
+    dateList.push({
+      date: moment().add(i, 'days').format('DD'),//27
+      day: moment().add(i, 'days').format('dd'),//Thu
+      formatedDate: moment().add(i, 'days').format('L')//27/06/2023 
+    })
+  }
+  return dateList;
+}
