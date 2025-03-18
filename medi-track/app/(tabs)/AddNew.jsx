@@ -3,7 +3,7 @@ import React from 'react'
 
 export default function AddNew() {
   return (
-    <View>
+    <View>s
       <Text>AddNew</Text>
     </View>
   )
