@@ -29,6 +29,7 @@ export default function SignIn() {
         const user = userCredential.user;
         console.log(user);
         await setLocalStorage("userDetails", user);
+        
         router.replace("(tabs)");
         // ...
       })

@@ -33,6 +33,7 @@ export default function MedicationList() {
     const dateRange = getDateRangeToDisplay();
     setDateRange(dateRange);
   };
+  
   const GetMedicationList = async (selectedDate) => {
     setLoading(true);
     const user = await getLocalStorage("userDetails");
@@ -122,14 +123,18 @@ export default function MedicationList() {
           onRefresh={() => GetMedicationList(selectedDate)}
           refreshing={loading}
           renderItem={({ item, index }) => (
-            <TouchableOpacity onPress={() => router.push({
-              pathname: "/action-modal",
-              params: {
-                ...item,
-                selectedDate:selectedDate
-              },
-            })}>
-              <MedicationCardItem medicine={item} selectedDate={selectedDate}/>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/action-modal",
+                  params: {
+                    ...item,
+                    selectedDate: selectedDate,
+                  },
+                })
+              }
+            >
+              <MedicationCardItem medicine={item} selectedDate={selectedDate} />
             </TouchableOpacity>
           )}
         />

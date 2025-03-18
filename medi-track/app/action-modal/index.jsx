@@ -67,7 +67,7 @@ export default function MedicationActionModal() {
         bottom:25
       }}>
         <Ionicons name="close-circle" size={44} color={Colors.GRAY} />
-      </TouchableOpacity>
+      </TouchableOpacity> 
     </View>
   )
 }

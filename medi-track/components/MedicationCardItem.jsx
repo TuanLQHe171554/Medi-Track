@@ -2,19 +2,24 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import Colors from "../constant/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
 export default function MedicationCardItem({ medicine, selectedDate = "" }) {
   console.log(medicine);
   const [status, setStatus] = useState();
   useEffect(() => {
     CheckStatus();
   }, [medicine]);
-
   const CheckStatus = () => {
-    const data = medicine?.action?.find((item) => item.date == selectedDate);
-    console.log("--", data);
-    setStatus(data);
+    // Kiểm tra xem medicine?.action có phải là mảng không và có tồn tại không
+    if (Array.isArray(medicine?.action)) {
+      const data = medicine?.action.find((item) => item.date == selectedDate);
+      console.log("--", data);
+      setStatus(data);
+    } else {
+      console.log("medicine?.action is not an array or is undefined");
+      setStatus(null); // Hoặc bạn có thể đặt một giá trị mặc định
+    }
   };
+  
 
   return (
     <View style={styles.container}>
