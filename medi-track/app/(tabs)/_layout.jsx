@@ -30,7 +30,7 @@ export default function TabLayout() {
           ),
         }}
         />
-        <Tabs.Screen name="AddNew"
+        <Tabs.Screen name="History"
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color, size }) => (
