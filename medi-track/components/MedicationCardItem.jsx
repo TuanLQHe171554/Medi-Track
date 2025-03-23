@@ -1,78 +1,129 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import Colors from "../constant/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
-export default function MedicationCardItem({ medicine, selectedDate = "" }) {
-  console.log(medicine);
+import { doc, deleteDoc } from "firebase/firestore";
+import { db } from "../config/FirebaseConfig";
+import { useRouter } from "expo-router";
+
+export default function MedicationCardItem({
+  medicine,
+  selectedDate = "",
+  onDelete,
+  showDeleteButton = true,
+}) {
+  const router = useRouter();
   const [status, setStatus] = useState();
+
   useEffect(() => {
     CheckStatus();
   }, [medicine]);
+
   const CheckStatus = () => {
-    // Kiểm tra xem medicine?.action có phải là mảng không và có tồn tại không
     if (Array.isArray(medicine?.action)) {
       const data = medicine?.action.find((item) => item.date == selectedDate);
-      console.log("--", data);
       setStatus(data);
     } else {
-      console.log("medicine?.action is not an array or is undefined");
-      setStatus(null); // Hoặc bạn có thể đặt một giá trị mặc định
+      setStatus(null);
     }
   };
-  
+
+  const handleDelete = () => {
+    Alert.alert("Xác nhận", "Bạn có chắc chắn muốn xóa thuốc này không?", [
+      { text: "Hủy", style: "cancel" },
+      {
+        text: "Xóa",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteDoc(doc(db, "medication", medicine.docId));
+            onDelete(medicine.docId);
+          } catch (error) {
+            console.error("Error deleting medication:", error);
+          }
+        },
+      },
+    ]);
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.subContainer}>
+      {/* Left Section: Image, Name, and Details */}
+      <View style={styles.leftContainer}>
         <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: medicine?.type?.icon }}
-            style={{
-              width: 60,
-              height: 60,
-            }}
-          />
+          <Image source={{ uri: medicine?.type?.icon }} style={styles.image} />
         </View>
-        <View>
-          <Text style={{ fontSize: 22, fontWeight: "bold" }}>
-            {medicine?.name}
-          </Text>
-          <Text style={{ fontSize: 17 }}>{medicine?.when}</Text>
-          <Text style={{ color: "white" }}>
-            {medicine?.does} {medicine?.type?.name}
-          </Text>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.name}>{medicine?.name}</Text>
+          <Text style={styles.when}>{medicine?.when}</Text>
         </View>
       </View>
-      <View style={styles.reiminder}>
-        <Ionicons name="timer-outline" size={24} color="black" />
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-          {medicine?.reminder}
-        </Text>
+
+      {/* Right Section: Reminder and Actions */}
+      <View style={styles.rightContainer}>
+        <View style={styles.reminderContainer}>
+          <Ionicons name="timer-outline" size={20} color="black" />
+          <Text style={styles.reminderText}>{medicine?.reminder}</Text>
+        </View>
+        {showDeleteButton && (
+          <View style={styles.actionContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: "/edit-medication",
+                  params: { docId: medicine.docId.toString() },
+                });
+              }}
+              style={styles.actionButton}
+            >
+              <Ionicons name="pencil-outline" size={20} color={Colors.PRIMARY} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
+              <Ionicons name="trash-outline" size={20} color="red" />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
+
+      {/* Status Icon (if applicable) */}
       {status?.date && (
         <View style={styles.statusContainer}>
-         {status?.status=="Taken"? <Ionicons name="checkmark-circle" 
-         size={24} color={Colors.GREEN} />:
-         status?.status=="Missed"&&
-          <Ionicons name="close-circle" 
-          size={24} color='red' />}
+          {status?.status === "Taken" ? (
+            <Ionicons name="checkmark-circle" size={24} color={Colors.GREEN} />
+          ) : (
+            status?.status === "Missed" && (
+              <Ionicons name="close-circle" size={24} color="red" />
+            )
+          )}
         </View>
       )}
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
-    // backgroundColor:Colors.LIGHT_PRIMARY,
     borderWidth: 1,
     borderColor: Colors.LIGHT_GRAY,
     marginTop: 10,
     borderRadius: 15,
-    justifyContent: "space-between",
+    backgroundColor: "#fff",
+  },
+  leftContainer: {
     flexDirection: "row",
-    width: "100%",
     alignItems: "center",
+    flex: 1, // Chiếm không gian còn lại
   },
   imageContainer: {
     padding: 10,
@@ -80,21 +131,49 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginRight: 15,
   },
-  subContainer: {
+  image: {
+    width: 50,
+    height: 50,
+  },
+  detailsContainer: {
+    flex: 1, // Đảm bảo phần chi tiết chiếm hết không gian còn lại
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  when: {
+    fontSize: 16,
+    color: Colors.GRAY,
+  },
+  rightContainer: {
+    alignItems: "flex-end",
+  },
+  reminderContainer: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  reiminder: {
-    padding: 12,
-    // backgroundColor:'white',
+    padding: 8,
     borderRadius: 15,
-    alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.LIGHT_GRAY,
+    marginBottom: 5,
+  },
+  reminderText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 5,
+  },
+  actionContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  actionButton: {
+    padding: 5,
+    marginLeft: 5,
   },
   statusContainer: {
     position: "absolute",
     top: 5,
-    padding: 7,
+    left: 5,
   },
 });

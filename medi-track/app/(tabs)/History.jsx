@@ -15,7 +15,9 @@ import { db } from "../../config/FirebaseConfig";
 import { getLocalStorage } from "../../service/Storage";
 import EmptyState from "../../components/EmptyState";
 import MedicationCardItem from "../../components/MedicationCardItem";
+import { useRouter } from "expo-router";
 export default function History() {
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(
     moment().format("MM/DD/YYYY")
   );
@@ -131,7 +133,8 @@ export default function History() {
                 })
               }
             >
-              <MedicationCardItem medicine={item} selectedDate={selectedDate} />
+              <MedicationCardItem medicine={item} selectedDate={selectedDate}
+              showDeleteButton={false} />
             </TouchableOpacity>
           )}
         />

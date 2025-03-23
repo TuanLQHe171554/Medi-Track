@@ -45,7 +45,8 @@ export default function MedicationActionModal() {
       <Text style={{fontSize:30,fontWeight:'bold',color:Colors.PRIMARY}}>{medicine?.reminder}</Text>
       <Text style={{fontSize:18}}>It's time to take</Text>
     
-      <MedicationCardItem medicine={medicine} />
+      <MedicationCardItem medicine={medicine} 
+      showDeleteButton={false}/>
       <View style={styles.btnContainer}>
         <TouchableOpacity style={styles.closeBtn}
         onPress={()=>UpdateActionStatus('Missed')}

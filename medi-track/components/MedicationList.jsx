@@ -33,7 +33,7 @@ export default function MedicationList() {
     const dateRange = getDateRangeToDisplay();
     setDateRange(dateRange);
   };
-  
+
   const GetMedicationList = async (selectedDate) => {
     setLoading(true);
     const user = await getLocalStorage("userDetails");
@@ -45,18 +45,21 @@ export default function MedicationList() {
         where("dates", "array-contains", selectedDate)
       );
       const querySnapshot = await getDocs(q);
-
+      const medications = [];
       querySnapshot.forEach((doc) => {
-        console.log("docId:" + doc.id + "==>", doc.data());
-        setMedList((prev) => [...prev, doc.data()]);
+        console.log("Fetched doc:", doc.id, doc.data()); // Thêm dòng này để kiểm tra
+        medications.push({ ...doc.data(), docId: doc.id });
       });
+      setMedList(medications);
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
   };
-
+  const handleDelete = (docId) => {
+    setMedList((prev) => prev.filter((item) => item.docId !== docId));
+  };
   return (
     <View
       style={{
@@ -122,19 +125,21 @@ export default function MedicationList() {
           data={medList}
           onRefresh={() => GetMedicationList(selectedDate)}
           refreshing={loading}
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() =>
                 router.push({
                   pathname: "/action-modal",
-                  params: {
-                    ...item,
-                    selectedDate: selectedDate,
-                  },
+                  params: { ...item, selectedDate },
                 })
               }
             >
-              <MedicationCardItem medicine={item} selectedDate={selectedDate} />
+              <MedicationCardItem
+                medicine={item}
+                selectedDate={selectedDate}
+                onDelete={handleDelete}
+                showDeleteButton={true}
+              />
             </TouchableOpacity>
           )}
         />
