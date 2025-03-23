@@ -28,12 +28,10 @@ export default function MedicationList() {
     getDateRangeList();
     GetMedicationList(selectedDate);
   }, []);
-
   const getDateRangeList = () => {
     const dateRange = getDateRangeToDisplay();
     setDateRange(dateRange);
   };
-
   const GetMedicationList = async (selectedDate) => {
     setLoading(true);
     const user = await getLocalStorage("userDetails");
@@ -149,7 +147,6 @@ export default function MedicationList() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   dateGroup: {
     padding: 15,

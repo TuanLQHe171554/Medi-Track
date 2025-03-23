@@ -12,7 +12,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../config/FirebaseConfig";
 import { useRouter } from "expo-router";
-
 export default function MedicationCardItem({
   medicine,
   selectedDate = "",
@@ -21,11 +20,9 @@ export default function MedicationCardItem({
 }) {
   const router = useRouter();
   const [status, setStatus] = useState();
-
   useEffect(() => {
     CheckStatus();
   }, [medicine]);
-
   const CheckStatus = () => {
     if (Array.isArray(medicine?.action)) {
       const data = medicine?.action.find((item) => item.date == selectedDate);
@@ -34,7 +31,6 @@ export default function MedicationCardItem({
       setStatus(null);
     }
   };
-
   const handleDelete = () => {
     Alert.alert("Xác nhận", "Bạn có chắc chắn muốn xóa thuốc này không?", [
       { text: "Hủy", style: "cancel" },
@@ -52,7 +48,6 @@ export default function MedicationCardItem({
       },
     ]);
   };
-
   return (
     <View style={styles.container}>
       {/* Left Section: Image, Name, and Details */}
@@ -83,9 +78,16 @@ export default function MedicationCardItem({
               }}
               style={styles.actionButton}
             >
-              <Ionicons name="pencil-outline" size={20} color={Colors.PRIMARY} />
+              <Ionicons
+                name="pencil-outline"
+                size={20}
+                color={Colors.PRIMARY}
+              />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
+            <TouchableOpacity
+              onPress={handleDelete}
+              style={styles.actionButton}
+            >
               <Ionicons name="trash-outline" size={20} color="red" />
             </TouchableOpacity>
           </View>
@@ -107,7 +109,6 @@ export default function MedicationCardItem({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",

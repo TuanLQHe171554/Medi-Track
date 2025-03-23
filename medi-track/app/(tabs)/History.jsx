@@ -28,10 +28,10 @@ export default function History() {
     getDateList();
     GetMedicationList(selectedDate);
   }, []);
-  const getDateList=()=>{
+  const getDateList = () => {
     const dates = getPrevDateRangeToDisplay();
     setDateRange(dates);
-  }
+  };
   const GetMedicationList = async (selectedDate) => {
     setLoading(true);
     const user = await getLocalStorage("userDetails");
@@ -56,98 +56,108 @@ export default function History() {
   };
   return (
     <FlatList
-    data={[]}
-    style={{
-      height: "100%",
-      backgroundColor: 'white',
-    }}
-    ListHeaderComponent={
-    <View style={styles.mainContainer}>
-      <Image
-        style={styles.imageBanner}
-        source={require("./../../assets/images/med-history.png")}
-      />
-      <Text style={styles.header}>Medication history</Text>
+      data={[]}
+      style={{
+        height: "100%",
+        backgroundColor: "white",
+      }}
+      ListHeaderComponent={
+        <View style={styles.mainContainer}>
+          <Image
+            style={styles.imageBanner}
+            source={require("./../../assets/images/med-history.png")}
+          />
+          <Text style={styles.header}>Medication history</Text>
 
-      <FlatList
-        horizontal
-        data={dateRange}
-        style={{
-          marginTop: 15,
-        }}
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity
-            style={[
-              styles.dateGroup,
-              {
-                backgroundColor:
-                  item.formatedDate == selectedDate
-                    ? Colors.PRIMARY
-                    : Colors.LIGHT_GRAY,
-              },
-            ]}
-            onPress={() => {
-              setSelectedDate(item.formatedDate);
-              GetMedicationList(item.formatedDate);
+          <FlatList
+            horizontal
+            data={dateRange}
+            style={{
+              marginTop: 15,
             }}
-          >
-            <Text
-              style={[
-                styles.day,
-                {
-                  color: item.formatedDate == selectedDate ? "white" : "black",
-                },
-              ]}
-            >
-              {item.day}
-            </Text>
-            <Text
-              style={[
-                styles.date,
-                {
-                  color: item.formatedDate == selectedDate ? "white" : "black",
-                },
-              ]}
-            >
-              {item.date}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
-
-{medList?.length > 0 ? (
-        <FlatList
-          data={medList}
-          onRefresh={() => GetMedicationList(selectedDate)}
-          refreshing={loading}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: "/action-modal",
-                  params: {
-                    ...item,
-                    selectedDate: selectedDate,
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                style={[
+                  styles.dateGroup,
+                  {
+                    backgroundColor:
+                      item.formatedDate == selectedDate
+                        ? Colors.PRIMARY
+                        : Colors.LIGHT_GRAY,
                   },
-                })
-              }
+                ]}
+                onPress={() => {
+                  setSelectedDate(item.formatedDate);
+                  GetMedicationList(item.formatedDate);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.day,
+                    {
+                      color:
+                        item.formatedDate == selectedDate ? "white" : "black",
+                    },
+                  ]}
+                >
+                  {item.day}
+                </Text>
+                <Text
+                  style={[
+                    styles.date,
+                    {
+                      color:
+                        item.formatedDate == selectedDate ? "white" : "black",
+                    },
+                  ]}
+                >
+                  {item.date}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+
+          {medList?.length > 0 ? (
+            <FlatList
+              data={medList}
+              onRefresh={() => GetMedicationList(selectedDate)}
+              refreshing={loading}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push({
+                      pathname: "/action-modal",
+                      params: {
+                        ...item,
+                        selectedDate: selectedDate,
+                      },
+                    })
+                  }
+                >
+                  <MedicationCardItem
+                    medicine={item}
+                    selectedDate={selectedDate}
+                    showDeleteButton={false}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          ) : (
+            <Text
+              style={{
+                fontSize: 25,
+                padding: 20,
+                fontWeight: "bold",
+                color: Colors.GRAY,
+                textAlign: "center",
+              }}
             >
-              <MedicationCardItem medicine={item} selectedDate={selectedDate}
-              showDeleteButton={false} />
-            </TouchableOpacity>
+              No Medication Found
+            </Text>
           )}
-        />
-      ) : (
-        <Text style={{
-          fontSize: 25,
-          padding: 20,
-          fontWeight: "bold",
-          color: Colors.GRAY,
-          textAlign: "center"
-        }}>No Medication Found</Text>
-      )}
-    </View>}
+        </View>
+      }
     />
   );
 }
@@ -181,5 +191,4 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "bold",
   },
-  
 });
