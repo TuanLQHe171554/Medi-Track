@@ -16,22 +16,26 @@ import { db } from "../config/FirebaseConfig";
 import MedicationCardItem from "./MedicationCardItem";
 import EmptyState from "./EmptyState";
 import { useRouter } from "expo-router";
+
 export default function MedicationList() {
   const router = useRouter();
-  const [medList, setMedList] = useState();
+  const [medList, setMedList] = useState([]);
   const [dateRange, setDateRange] = useState();
   const [selectedDate, setSelectedDate] = useState(
     moment().format("MM/DD/YYYY")
   );
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     getDateRangeList();
     GetMedicationList(selectedDate);
   }, []);
+
   const getDateRangeList = () => {
     const dateRange = getDateRangeToDisplay();
     setDateRange(dateRange);
   };
+
   const GetMedicationList = async (selectedDate) => {
     setLoading(true);
     const user = await getLocalStorage("userDetails");
@@ -45,19 +49,20 @@ export default function MedicationList() {
       const querySnapshot = await getDocs(q);
       const medications = [];
       querySnapshot.forEach((doc) => {
-        console.log("Fetched doc:", doc.id, doc.data()); // Thêm dòng này để kiểm tra
         medications.push({ ...doc.data(), docId: doc.id });
       });
       setMedList(medications);
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.log("Error in GetMedicationList:", error);
       setLoading(false);
     }
   };
+
   const handleDelete = (docId) => {
     setMedList((prev) => prev.filter((item) => item.docId !== docId));
   };
+
   return (
     <View
       style={{
@@ -128,7 +133,11 @@ export default function MedicationList() {
               onPress={() =>
                 router.push({
                   pathname: "/action-modal",
-                  params: { ...item, selectedDate },
+                  params: {
+                    ...item,
+                    type: JSON.stringify(item.type), // Chuyển type thành chuỗi JSON
+                    selectedDate,
+                  },
                 })
               }
             >
@@ -147,6 +156,7 @@ export default function MedicationList() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   dateGroup: {
     padding: 15,

@@ -14,10 +14,20 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/FirebaseConfig";
 import moment from "moment";
+
 export default function MedicationActionModal() {
-  const medicine = useLocalSearchParams();
+  const params = useLocalSearchParams();
   const router = useRouter();
-  console.log(medicine);
+
+  // Parse lại dữ liệu type từ chuỗi JSON
+  const medicine = {
+    ...params,
+    type: params.type ? JSON.parse(params.type) : { icon: "" },
+  };
+
+  console.log("Medicine data:", medicine);
+  console.log("Type icon:", medicine?.type?.icon);
+
   const UpdateActionStatus = async (status) => {
     try {
       const docRef = doc(db, "medication", medicine?.docId);
@@ -35,9 +45,10 @@ export default function MedicationActionModal() {
         },
       ]);
     } catch (error) {
-      console.log(error);
+      console.log("Error in UpdateActionStatus:", error);
     }
   };
+
   return (
     <View style={styles.container}>
       <Image
@@ -82,6 +93,7 @@ export default function MedicationActionModal() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     padding: 25,

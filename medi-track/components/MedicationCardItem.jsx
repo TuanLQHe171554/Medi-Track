@@ -12,6 +12,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../config/FirebaseConfig";
 import { useRouter } from "expo-router";
+
 export default function MedicationCardItem({
   medicine,
   selectedDate = "",
@@ -20,9 +21,11 @@ export default function MedicationCardItem({
 }) {
   const router = useRouter();
   const [status, setStatus] = useState();
+
   useEffect(() => {
     CheckStatus();
-  }, [medicine]);
+  }, [medicine, selectedDate]);
+
   const CheckStatus = () => {
     if (Array.isArray(medicine?.action)) {
       const data = medicine?.action.find((item) => item.date == selectedDate);
@@ -31,6 +34,7 @@ export default function MedicationCardItem({
       setStatus(null);
     }
   };
+
   const handleDelete = () => {
     Alert.alert("Xác nhận", "Bạn có chắc chắn muốn xóa thuốc này không?", [
       { text: "Hủy", style: "cancel" },
@@ -48,13 +52,20 @@ export default function MedicationCardItem({
       },
     ]);
   };
+
   return (
     <View style={styles.container}>
       {/* Left Section: Image, Name, and Details */}
       <View style={styles.leftContainer}>
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: medicine?.type?.icon }} style={styles.image} />
-        </View>
+        {medicine?.type?.icon ? (
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: medicine.type.icon }}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          </View>
+        ) : null}
         <View style={styles.detailsContainer}>
           <Text style={styles.name}>{medicine?.name}</Text>
           <Text style={styles.when}>{medicine?.when}</Text>
@@ -78,16 +89,9 @@ export default function MedicationCardItem({
               }}
               style={styles.actionButton}
             >
-              <Ionicons
-                name="pencil-outline"
-                size={20}
-                color={Colors.PRIMARY}
-              />
+              <Ionicons name="pencil-outline" size={20} color={Colors.PRIMARY} />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleDelete}
-              style={styles.actionButton}
-            >
+            <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
               <Ionicons name="trash-outline" size={20} color="red" />
             </TouchableOpacity>
           </View>
@@ -109,6 +113,7 @@ export default function MedicationCardItem({
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
@@ -124,7 +129,7 @@ const styles = StyleSheet.create({
   leftContainer: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1, // Chiếm không gian còn lại
+    flex: 1,
   },
   imageContainer: {
     padding: 10,
@@ -137,7 +142,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   detailsContainer: {
-    flex: 1, // Đảm bảo phần chi tiết chiếm hết không gian còn lại
+    flex: 1,
   },
   name: {
     fontSize: 20,
